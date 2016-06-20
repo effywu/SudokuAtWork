@@ -14,18 +14,10 @@ namespace SudokuAtWork
     {
         int[,] grids = new int[9, 9];
         HashSet<int>[,] tried_grid = new HashSet<int>[9, 9];
+        int mode = -1;
         public MainForm()
         {
             InitializeComponent();
-            generate();
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    string id = "label" + (i * 9 + j + 1).ToString();
-                    tableLayoutPanel1.GetControlFromPosition(j, i).Text = grids[i, j].ToString();
-                };
-            };
         }
 
 
@@ -77,6 +69,58 @@ namespace SudokuAtWork
             return false;
         }
 
+        private void display()
+        {
+            int hidden = -1;
+            if (mode == 1)
+            {
+                hidden = 40;
+            } else if (mode == 2)
+            {
+                hidden = 50;
+            } else
+            {
+                hidden = 60;
+            };
+
+            Random rand = new Random();
+            List<int> result = new List<int>();
+            for (int i = 0; i < hidden; i++)
+            {
+                int hidethis = rand.Next(1, 81);
+                while (result.Contains(hidethis))
+                {
+                    hidethis = rand.Next(1, 81);
+                };
+                result.Add(hidethis);
+            };
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                        string id = "label" + (i * 9 + j + 1).ToString();
+                        tableLayoutPanel1.GetControlFromPosition(j, i).Text = grids[i, j].ToString();
+                        if (!result.Contains(i * 9 + j + 1))
+                        {
+                        tableLayoutPanel1.GetControlFromPosition(j, i).Visible = false;
+                        };
+                };
+            };
+        }
+
+        private void clear()
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    string id = "label" + (i * 9 + j + 1).ToString();
+                    tableLayoutPanel1.GetControlFromPosition(j, i).Text = "";
+                    grids[i, j] = 0;
+                    tried_grid[i, j] = null;
+                };
+            };
+        }
         private bool findEmpty(ref int row, ref int column)
         {
             for (row = 0; row < 9; row++)
@@ -88,5 +132,33 @@ namespace SudokuAtWork
             };
             return false;
         }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void easyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            clear();
+            mode = 1;
+            generate();
+            display();
+        }
+        private void mediumToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            clear();
+            mode = 2;
+            generate();
+            display();
+        }
+        private void hardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            clear();
+            mode = 3;
+            generate();
+            display();
+        }
+
     }
 }
